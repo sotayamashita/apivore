@@ -10,6 +10,8 @@ module Apivore
       case version
       when '2.0'
         schema = File.read(File.expand_path("../../../data/swagger_2.0_schema.json", __FILE__))
+      when '3.0'
+        schema = File.read(File.expand_path("../../../data/openapi_3.0_schema.json", __FILE__))
       else
         raise "Unknown/unsupported Swagger version to validate against: #{version}"
       end
