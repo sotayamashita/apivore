@@ -70,18 +70,18 @@ module Apivore
       @swagger = Apivore::Swagger.new(fetch_swagger!)
     end
 
+    # @return Hash
     def fetch_swagger!
-      # Load specification from local
-      content = File.read(swagger_path)
-      JSON.parse(content)
-
       # session = ActionDispatch::Integration::Session.new(Rails.application)
       # begin
       #   session.get(swagger_path)
       # rescue
       #   fail "Unable to perform GET request for swagger json: #{swagger_path} - #{$!}."
       # end
-      #  JSON.parse(session.response.body)
+      # JSON.parse(session.response.body)
+
+      # TODO: It returns hash object directly temporarily
+      swagger_path
     end
 
     def validate_swagger!

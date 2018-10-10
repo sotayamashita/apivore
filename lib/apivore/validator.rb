@@ -19,12 +19,14 @@ module Apivore
       pre_checks(swagger_checker)
 
       unless has_errors?
+        # TODO: Detect whether hash only can be accessed with symbol or not.
+        # params の値はどうやってもシンボルでしかアクセスできない？ Ruby のバージョンに依存する？
         send(
           method,
           *RailsShim.action_dispatch_request_args(
             full_path(swagger_checker),
-            params: params['_data'] || {},
-            headers: params['_headers'] || {}
+            params:  params['_data']    || params['_data'.to_sym]    || {},
+            headers: params['_headers'] || params['_headers'.to_sym] || {},
           )
         )
         swagger_checker.response = response
@@ -43,14 +45,16 @@ module Apivore
     end
 
     def full_path(swagger_checker)
-      apivore_build_path(swagger_checker.base_path + path, params)
+      # TODO: Temporary for our usage
+      "/api" + apivore_build_path(swagger_checker.base_path + path, params)
     end
 
     def apivore_build_path(path, data)
       path.scan(/\{([^\}]*)\}/).each do |param|
         key = param.first
-        if data && data[key]
-          path = path.gsub "{#{key}}", data[key].to_s
+        # TODO: It does not support hash key such as { id: 1 }
+        if data && (data[key] || data[key.to_sym])
+          path = path.gsub "{#{key}}", (data[key] || data[key.to_sym]).to_s
         else
           raise URI::InvalidURIError, "No substitution data found for {#{key}}"\
             " to test the path #{path}.", caller

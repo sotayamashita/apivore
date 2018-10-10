@@ -10,7 +10,8 @@ module Apivore
       case version
       when '2.0'
         schema = File.read(File.expand_path("../../../data/swagger_2.0_schema.json", __FILE__))
-      when '3.0'
+      when '3.0.0'
+        # TODO: It shoud be matched with regex?
         schema = File.read(File.expand_path("../../../data/openapi_3.0_schema.json", __FILE__))
       else
         raise "Unknown/unsupported Swagger version to validate against: #{version}"
@@ -19,7 +20,8 @@ module Apivore
     end
 
     def version
-      swagger
+      # TODO: Understand the reason why it works like Hash[:openapi]
+      swagger || openapi
     end
 
     def base_path
@@ -40,6 +42,11 @@ module Apivore
             schema_location = nil
             if response_data.schema
               schema_location = Fragment.new ['#', 'paths', path, verb, 'responses', response_code, 'schema']
+            elsif response_data.content.first[1].schema
+              # TODO: It depends on media type
+              # OpenAPI の MineType は content -> application/json というふうにアクセスする。MineType ごとにアクセスが必要
+              # see: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#responses-object
+              schema_location = Fragment.new ['#', 'paths', path, verb, 'responses', response_code, 'content', 'application/json', 'schema']
             end
             block.call(path, verb, response_code, schema_location)
           end
