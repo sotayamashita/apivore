@@ -1,3 +1,3 @@
 :construction: The work is now in progress. 
 
-:memo: To-do List. https://github.com/sotayamashita/apivore/issues/1.
+:memo: To-do list : https://github.com/sotayamashita/apivore/issues/1.
